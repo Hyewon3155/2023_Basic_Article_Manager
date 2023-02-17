@@ -12,7 +12,6 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 
 		int lastArticleId = 0;
-        int views = 0;
 		List<Article> articles = new ArrayList<>();
 		
 		while (true) {
@@ -34,9 +33,8 @@ public class Main {
 				System.out.printf("내용 : ");
 				String body = sc.nextLine();
 				String date = Util.getDate();
-				int new_views = views;
 				
-				Article article = new Article(id, date, title, body, new_views);
+				Article article = new Article(id, date, title, body);
 				
 				articles.add(article);
 
@@ -49,7 +47,7 @@ public class Main {
 					continue;
 				}
 				
-				System.out.println("번호	|	제목  |  날짜  | 조회수");
+				System.out.println("번호	|	제목  |		날짜		| 조회수");
 				for (int i = articles.size() - 1; i >= 0; i--) {
 					Article article = articles.get(i);
 					System.out.printf("%d	|	%s  | %s  | %d\n", article.id, article.title, article.date, article.new_views);
@@ -76,11 +74,12 @@ public class Main {
 					continue;
 				}
 				
+				foundArticle.addView();
 				System.out.printf("번호 : %d\n", foundArticle.id);
 				System.out.printf("날짜 : %s\n", foundArticle.date);
 				System.out.printf("제목 : %s\n", foundArticle.title);
 				System.out.printf("내용 : %s\n", foundArticle.body);
-				views = views + 1;
+				System.out.printf("조회수 : %s\n", foundArticle.new_views);
 				
 			} else if (cmd.startsWith("article delete ")){
 				String[] cmdBits = cmd.split(" ");
@@ -155,11 +154,17 @@ class Article {
 	int new_views;
 	
 	
-	Article(int id, String date, String title, String body, int new_views){
+	Article(int id, String date, String title, String body){
 		this.id = id;
 		this.title = title;
 		this.body = body;
 		this.date = date;
-		this.new_views = new_views;
+		this.new_views = 0;
+	}
+
+
+	public void addView() {
+		this.new_views++;
+		
 	}
 }
