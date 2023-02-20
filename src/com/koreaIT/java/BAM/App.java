@@ -1,6 +1,7 @@
 package com.koreaIT.java.BAM;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -50,36 +51,48 @@ public class App {
 
 				System.out.printf("%d번 글이 생성되었습니다\n", id);
 
-			} else if (cmd.equals("article list ")) {
-				String[] cmdBits = cmd.split(" ");
-				String title = "";
-				if( title.length() == 0) {
+			} else if (cmd.startsWith("article list ")) {
+				
 					if (articles.size() == 0) {
 						System.out.println("게시글이 없습니다");
 						continue;
 					}
 					
+					String searchKeyword = cmd.substring("article list".length()).trim();
+					// 앞에 있는 공백을 없애주기 위해 trim()을 사용
+					// article list의 길이만큼 잘라주고, 그 다음의 공백은 삭제하고 그 뒤부터 searchKeyword에 저장한다.
+					
+					List<Article> printArticles = new ArrayList<>(articles);
+					// printArticles에 원래 articles의 값들을 담아줌
+					// 새로운 객체가 갖고 있는 리모컨을 넘겨줌
+					if(searchKeyword.length() > 0) {
+						System.out.println("검색어: " + searchKeyword);
+						
+					    printArticles.clear();
+						// printArticles를 빈 객체로 만들어 줌 
+					    
+						for(Article article : articles) {
+							if(article.title.contains(searchKeyword)) {
+								printArticles.add(article);
+								// 검색어가 있는 경우 해당 검색어(제목)이 포함되어 있는 article의 값들을 담음
+							}
+					    }
+						if(printArticles.size() == 0) {
+							System.out.println("검색결과가 없습니다.");
+							// 검색어가 있지만, 해당 검색어(제목)이 포함되어 있는 article의 값이 없어서 printArticles.size()의 크기가 0임. 
+						}
+					
+
 					System.out.println("번호	|	제목	|		날짜		|	조회");
-					for (int i = articles.size() - 1; i >= 0; i--) {
-						Article article = articles.get(i);
+					Collections.reverse(printArticles);
+					// printArticles에 있는 값들의 순서를 반대로 바꾸어 줌
+					for (Article article : printArticles) {
 						System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
+						// 검색어가 있는 경우에는 해당 제목이 포함되어 있는 article의 값들을 출력
+						// 검색어가 없는 경우 article에 담겨있는 모든 값들을 출력(리스트 출력)
 					}
 				}
-				else {
-					for (int i = articles.size() - 1; i >= 0; i--) {
-						Article article = articles.get(i);
-						if( title == article.title ) {
-							if( i == articles.size())
-								System.out.println("번호	|	제목	|		날짜		|	조회");
-							System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
-						}
-						else {
-							System.out.printf("해당 제목의 게시글이 존재하지 않습니다.");
-							continue;
-						}
-					}
 				
-				}
 			}else if (cmd.startsWith("article detail ")) {
 				
 				String[] cmdBits = cmd.split(" ");
