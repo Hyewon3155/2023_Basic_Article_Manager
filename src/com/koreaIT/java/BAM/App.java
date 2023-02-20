@@ -50,20 +50,37 @@ public class App {
 
 				System.out.printf("%d번 글이 생성되었습니다\n", id);
 
-			} else if (cmd.equals("article list")) {
-				
-				if (articles.size() == 0) {
-					System.out.println("게시글이 없습니다");
-					continue;
+			} else if (cmd.equals("article list ")) {
+				String[] cmdBits = cmd.split(" ");
+				String title = "";
+				if( title.length() == 0) {
+					if (articles.size() == 0) {
+						System.out.println("게시글이 없습니다");
+						continue;
+					}
+					
+					System.out.println("번호	|	제목	|		날짜		|	조회");
+					for (int i = articles.size() - 1; i >= 0; i--) {
+						Article article = articles.get(i);
+						System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
+					}
 				}
+				else {
+					for (int i = articles.size() - 1; i >= 0; i--) {
+						Article article = articles.get(i);
+						if( title == article.title ) {
+							if( i == articles.size())
+								System.out.println("번호	|	제목	|		날짜		|	조회");
+							System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
+						}
+						else {
+							System.out.printf("해당 제목의 게시글이 존재하지 않습니다.");
+							continue;
+						}
+					}
 				
-				System.out.println("번호	|	제목	|		날짜		|	조회");
-				for (int i = articles.size() - 1; i >= 0; i--) {
-					Article article = articles.get(i);
-					System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
 				}
-				
-			} else if (cmd.startsWith("article detail ")) {
+			}else if (cmd.startsWith("article detail ")) {
 				
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
