@@ -68,36 +68,26 @@ public class App {
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
 				
-				Article foundArticle = null;
-				
-				for(int i = 0; i < articles.size(); i++) {
-					Article article = articles.get(i);
-					
-					if(article.id == id) {
-						foundArticle = article;
-						break;
-					}
-				}
+				Article foundArticle = getfindIndex(id);
 				
 				if(foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 					continue;
 				}
+				getfindIndex(id).addViewCnt();
 				
-				foundArticle.addViewCnt();
-				
-				System.out.printf("번호 : %d\n", foundArticle.id);
-				System.out.printf("날짜 : %s\n", foundArticle.regDate);
-				System.out.printf("제목 : %s\n", foundArticle.title);
-				System.out.printf("내용 : %s\n", foundArticle.body);
-				System.out.printf("조회수 : %d\n", foundArticle.viewCnt);
+				System.out.printf("번호 : %d\n", getfindIndex(id).id);
+				System.out.printf("날짜 : %s\n", getfindIndex(id).regDate);
+				System.out.printf("제목 : %s\n", getfindIndex(id).title);
+				System.out.printf("내용 : %s\n", getfindIndex(id).body);
+				System.out.printf("조회수 : %d\n", getfindIndex(id).viewCnt);
 				
 			} else if (cmd.startsWith("article modify ")) {
 				
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
 				
-				Article foundArticle = null;
+				Article foundArticle = getfindIndex(id);
 				
 				for(int i = 0; i < articles.size(); i++) {
 					Article article = articles.get(i);
@@ -128,23 +118,14 @@ public class App {
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
 				
-				int foundIndex = -1;
+				Article foundArticle = getfindIndex(id);
 				
-				for(int i = 0; i < articles.size(); i++) {
-					Article article = articles.get(i);
-					
-					if(article.id == id) {
-						foundIndex = i;
-						break;
-					}
-				}
-				
-				if(foundIndex == -1) {
+				if(foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 					continue;
 				}
 				
-				articles.remove(foundIndex);
+				articles.remove(articles.indexOf(foundArticle));
 				
 				System.out.printf("%d번 게시글을 삭제했습니다\n", id);
 				
@@ -159,10 +140,22 @@ public class App {
 
 	}
 
+
 	private void makeTestData() {
 		System.out.println("게시물 테스트 데이터를 생성합니다");
 		articles.add(new Article(1, Util.getDate(), "제목1", "내용1", 10));
 		articles.add(new Article(2, Util.getDate(), "제목2", "내용2", 20));
 		articles.add(new Article(3, Util.getDate(), "제목3", "내용3", 30));
+	}
+	
+	private Article getfindIndex(int id) {
+		
+		for(Article article : articles) {
+			if(article.id == id) {
+				return article;
+			}
+		}
+		return null;
+		
 	}
 }
