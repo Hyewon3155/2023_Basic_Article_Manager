@@ -1,0 +1,158 @@
+package com.koreaIT.java.BAM.controller;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+import com.koreaIT.java.BAM.dto.Article;
+import com.koreaIT.java.BAM.util.Util;
+
+public class ArticleController {
+    List<Article> articles;
+    Scanner sc;
+    int lastArticleId;
+	public ArticleController(List<Article> articles, Scanner sc) {
+		this.articles = articles;
+		this.sc = sc;
+		this.lastArticleId = 3;
+	}
+	public void write() {
+		int id = lastArticleId + 1;
+		lastArticleId = id;
+		String regDate = Util.getDate();
+		System.out.printf("제목 : ");
+		String title = sc.nextLine();
+		System.out.printf("내용 : ");
+		String body = sc.nextLine();
+
+		Article article = new Article(id, regDate, title, body);
+		
+		articles.add(article);
+
+		System.out.printf("%d번 글이 생성되었습니다\n", id);
+
+	}
+	public void list(String cmd) {
+		if (articles.size() == 0) {
+			System.out.println("게시글이 없습니다");
+			return; // -> 리턴으로 함수를 종료시키되 넘겨주는 값은 없다.
+		}
+		
+		String searchKeyword = cmd.substring("article list".length()).trim();
+		// 앞에 있는 공백을 없애주기 위해 trim()을 사용
+		// article list의 길이만큼 잘라주고, 그 다음의 공백은 삭제하고 그 뒤부터 searchKeyword에 저장한다.
+		
+		List<Article> printArticles = new ArrayList<>(articles);
+		// printArticles에 원래 articles의 값들을 담아줌
+		// 새로운 객체가 갖고 있는 리모컨을 넘겨줌
+		if(searchKeyword.length() > 0) {
+			System.out.println("검색어: " + searchKeyword);
+			
+		    printArticles.clear();
+			// printArticles를 빈 객체로 만들어 줌 
+		    
+			for(Article article : articles) {
+				if(article.title.contains(searchKeyword)) {
+					printArticles.add(article);
+					// 검색어가 있는 경우 해당 검색어(제목)이 포함되어 있는 article의 값들을 담음
+				}
+		    }
+			if(printArticles.size() == 0) {
+				System.out.println("검색결과가 없습니다.");
+				// 검색어가 있지만, 해당 검색어(제목)이 포함되어 있는 article의 값이 없어서 printArticles.size()의 크기가 0임. 
+			}
+		
+
+		System.out.println("번호	|	제목	|		날짜		|	조회");
+		Collections.reverse(printArticles);
+		// printArticles에 있는 값들의 순서를 반대로 바꾸어 줌
+		for (Article article : printArticles) {
+			System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
+			// 검색어가 있는 경우에는 해당 제목이 포함되어 있는 article의 값들을 출력
+			// 검색어가 없는 경우 article에 담겨있는 모든 값들을 출력(리스트 출력)
+		}
+	  }
+	}
+	public void detail(String cmd) {
+		String[] cmdBits = cmd.split(" ");
+		int id = Integer.parseInt(cmdBits[2]);
+		
+		Article foundArticle = getfindIndex(id);
+		
+		if(foundArticle == null) {
+			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
+			return;
+		}
+		getfindIndex(id).addViewCnt();
+		
+		System.out.printf("번호 : %d\n", getfindIndex(id).id);
+		System.out.printf("날짜 : %s\n", getfindIndex(id).regDate);
+		System.out.printf("제목 : %s\n", getfindIndex(id).title);
+		System.out.printf("내용 : %s\n", getfindIndex(id).body);
+		System.out.printf("조회수 : %d\n", getfindIndex(id).viewCnt);
+		
+		
+	}
+	public void modify(String cmd) {
+		String[] cmdBits = cmd.split(" ");
+		int id = Integer.parseInt(cmdBits[2]);
+		
+		Article foundArticle = getfindIndex(id);
+		
+		for(int i = 0; i < articles.size(); i++) {
+			Article article = articles.get(i);
+			
+			if(article.id == id) {
+				foundArticle = article;
+				break;
+			}
+		}
+		
+		if(foundArticle == null) {
+			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
+			return;
+		}
+		
+		System.out.printf("수정할 제목 : ");
+		String title = sc.nextLine();
+		System.out.printf("수정할 내용 : ");
+		String body = sc.nextLine();
+		
+		foundArticle.title = title;
+		foundArticle.body = body;
+		
+		System.out.printf("%d번글이 수정되었습니다\n", id);
+		
+	}
+	public void delete(String cmd) {
+		String[] cmdBits = cmd.split(" ");
+		int id = Integer.parseInt(cmdBits[2]);
+		
+		Article foundArticle = getfindIndex(id);
+		
+		if(foundArticle == null) {
+			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
+			return;
+		}
+		
+		articles.remove(articles.indexOf(foundArticle));
+		
+		System.out.printf("%d번 게시글을 삭제했습니다\n", id);
+		
+	} 
+  
+     private Article getfindIndex(int id) {
+		
+		for(Article article : articles) {
+			if(article.id == id) {
+				return article;
+			}
+		}
+		return null;
+		
+	}
+       
+}
+
+
