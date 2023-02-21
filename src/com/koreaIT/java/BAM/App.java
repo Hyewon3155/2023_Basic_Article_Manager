@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.koreaIT.java.BAM.dto.Article;
+import com.koreaIT.java.BAM.dto.Login;
 import com.koreaIT.java.BAM.util.Util;
 
 public class App {
 	private List<Article> articles;
+	private List<Login> logins;
 	
 	App(){
 		articles = new ArrayList<>();
+		logins = new ArrayList<>();
 	}
 	
 	public void run() {
@@ -23,6 +26,7 @@ public class App {
 		Scanner sc = new Scanner(System.in);
 
 		int lastArticleId = 3;
+		int lastMemberId = 0;
 		
 		while (true) {
 
@@ -36,6 +40,44 @@ public class App {
 
 			if (cmd.equals("exit")) {
 				break;
+			} 
+			if (cmd.equals("member join")) {
+				int id = lastMemberId + 1;
+				lastMemberId = id;
+				String regDate = Util.getDate();
+				String loginId = null;
+				
+				while( true ) {
+					System.out.printf("로그인 아이디: ");
+					loginId = sc.nextLine();
+					if (loginIdDupChk(loginId) == false) {
+						System.out.printf("%s은(는) 이미 사용중인 아이디입니다.\n", loginId);
+						continue;
+					}
+					System.out.printf("%s은(는) 사용 가능한 아이디입니다.\n", loginId);
+					break;
+				}
+				String pwd = null;
+				while( true ) {
+					System.out.printf("로그인 비밀번호: ");
+				    pwd = sc.nextLine();
+				    System.out.printf("로그인 비밀번호 확인: ");
+				    String checkPwd = sc.nextLine();
+				    // checkPwd != pwd로 하면 안 됨
+				    // 주소값으로 비교하기 때문에 계속 비밀번호가 같지 않다고 나옴
+				    // equals로 비교하면 값으로 비교하기 때문에 옳은 결과가 생성됨 
+				    if(checkPwd.equals(pwd) == false) {
+				    	System.out.println("비밀번호를 확인해주세요.");
+				    	continue;
+				    }
+				    	break;
+				    
+				}
+			    System.out.printf("이름: ");
+			    String name = sc.nextLine().trim();
+			    Login login = new Login(id, regDate, loginId, pwd, name);
+			    logins.add(login);
+			    System.out.printf("%s회원님 환영합니다.\n", name);
 			} else if (cmd.equals("article write")) {
 				int id = lastArticleId + 1;
 				lastArticleId = id;
@@ -170,6 +212,17 @@ public class App {
 
 	}
 
+
+	private boolean loginIdDupChk(String loginId) {
+		for( Login login : logins ) {
+			if(login.loginId.equals(loginId) ) 
+				return false;
+	     }
+		
+		return true;
+		
+		
+	}
 
 	private void makeTestData() {
 		System.out.println("게시물 테스트 데이터를 생성합니다");
