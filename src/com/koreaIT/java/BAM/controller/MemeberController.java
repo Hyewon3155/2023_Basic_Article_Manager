@@ -1,5 +1,6 @@
 package com.koreaIT.java.BAM.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,9 +12,10 @@ public class MemeberController extends Controller {
 	private List<Login> logins;
     private Scanner sc;
     private int lastMemberId;
-    
-	public MemeberController(List<Login> logins, Scanner sc) {
-		this.logins = logins;
+
+	public MemeberController(Scanner sc) {
+		this.logins = new ArrayList<>();
+		// 리스트를 받아오지 않고 클래스 내부에서 생성
 	    this.sc = sc;
 	    this.lastMemberId = 0;
 	}
