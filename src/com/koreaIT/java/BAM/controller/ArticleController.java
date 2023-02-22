@@ -8,16 +8,45 @@ import java.util.Scanner;
 import com.koreaIT.java.BAM.dto.Article;
 import com.koreaIT.java.BAM.util.Util;
 
-public class ArticleController {
-    List<Article> articles;
-    Scanner sc;
-    int lastArticleId;
+public class ArticleController extends Controller{
+    private List<Article> articles;
+    private Scanner sc;
+    private int lastArticleId;
+    private String cmd;
 	public ArticleController(List<Article> articles, Scanner sc) {
 		this.articles = articles;
 		this.sc = sc;
 		this.lastArticleId = 3;
 	}
-	public void write() {
+	@Override
+	public void doAction(String cmd, String methodName) {
+		this.cmd = cmd;
+		
+		switch(methodName) {
+		case "write":
+		     write();
+		     break;
+		case "list":
+			 list();
+			 break;
+		case "detail":
+			 detail();
+			 break;
+		case "modify":
+			 modify();
+			 break;
+		case "delete":
+			 delete();
+			 break;
+		default:
+			System.out.println("존재하지 않는 명령어입니다");
+			break;
+		
+	    
+		}
+		
+	}
+	private void write() {
 		int id = lastArticleId + 1;
 		lastArticleId = id;
 		String regDate = Util.getDate();
@@ -33,7 +62,7 @@ public class ArticleController {
 		System.out.printf("%d번 글이 생성되었습니다\n", id);
 
 	}
-	public void list(String cmd) {
+	private void list() {
 		if (articles.size() == 0) {
 			System.out.println("게시글이 없습니다");
 			return; // -> 리턴으로 함수를 종료시키되 넘겨주는 값은 없다.
@@ -61,7 +90,10 @@ public class ArticleController {
 			if(printArticles.size() == 0) {
 				System.out.println("검색결과가 없습니다.");
 				// 검색어가 있지만, 해당 검색어(제목)이 포함되어 있는 article의 값이 없어서 printArticles.size()의 크기가 0임. 
+			    return;
 			}
+		}
+			
 		
 
 		System.out.println("번호	|	제목	|		날짜		|	조회");
@@ -72,10 +104,15 @@ public class ArticleController {
 			// 검색어가 있는 경우에는 해당 제목이 포함되어 있는 article의 값들을 출력
 			// 검색어가 없는 경우 article에 담겨있는 모든 값들을 출력(리스트 출력)
 		}
-	  }
+	  
 	}
-	public void detail(String cmd) {
+	private void detail() {
 		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length == 2) {
+			System.out.println("명령어를 확인해주세요");
+			return;
+		}
 		int id = Integer.parseInt(cmdBits[2]);
 		
 		Article foundArticle = getfindIndex(id);
@@ -94,8 +131,12 @@ public class ArticleController {
 		
 		
 	}
-	public void modify(String cmd) {
+	public void modify() {
 		String[] cmdBits = cmd.split(" ");
+		if(cmdBits.length == 2) {
+			System.out.println("명령어를 확인해주세요");
+			return;
+		}
 		int id = Integer.parseInt(cmdBits[2]);
 		
 		Article foundArticle = getfindIndex(id);
@@ -125,8 +166,12 @@ public class ArticleController {
 		System.out.printf("%d번글이 수정되었습니다\n", id);
 		
 	}
-	public void delete(String cmd) {
+	private void delete() {
 		String[] cmdBits = cmd.split(" ");
+		if(cmdBits.length == 2) {
+			System.out.println("명령어를 확인해주세요");
+			return;
+		}
 		int id = Integer.parseInt(cmdBits[2]);
 		
 		Article foundArticle = getfindIndex(id);

@@ -1,5 +1,6 @@
 package com.koreaIT.java.BAM.dto;
 
+// Dto의 id, regDate 상속 받음
 public class Login extends Dto {
 	public String loginId;
 	public String pwd;
