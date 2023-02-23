@@ -12,12 +12,14 @@ public class MemeberController extends Controller {
 	private List<Login> logins;
     private Scanner sc;
     private int lastMemberId;
+    private Login loginedMember;
 
 	public MemeberController(Scanner sc) {
 		this.logins = new ArrayList<>();
 		// 리스트를 받아오지 않고 클래스 내부에서 생성
 	    this.sc = sc;
-	    this.lastMemberId = 0;
+	    this.lastMemberId = 3;
+	    this.loginedMember = null;
 	}
 	@Override
 	public void doAction(String cmd, String methodName) {
@@ -28,6 +30,9 @@ public class MemeberController extends Controller {
 			 break;
 		 case "login":
 			 doLogin();
+			 break;
+		 case "logout":
+			 doLogout();
 			 break;
 		 default:
 				System.out.println("존재하지 않는 명령어입니다");
@@ -74,6 +79,10 @@ public class MemeberController extends Controller {
 	    System.out.printf("%s회원님 환영합니다.\n", name);
 	}
 	private void doLogin() {
+		 if(isLogined()) {
+			 System.out.println("이미 로그인 상태입니다");
+			 return;
+		 }
          System.out.printf("로그인 아이디: ");
          String loginId = sc.nextLine();
          System.out.printf("로그인 비밀번호: ");
@@ -81,33 +90,66 @@ public class MemeberController extends Controller {
          Login login = getLoginById(loginId);
          
          if(login == null) {
+        	 //로그인하려는 사용자가 입력한 로그인 아이디 정보가 존재하지 않음
+        	 //해당 아이디로 회원가입을 한 적이 없음
         	 System.out.println("존재하지 않는 아이디입니다.");
              return;
          }
          if(login.pwd.equals(doPwd) == false) {
+        	 //로그인하려는 사용자가 입력한 로그인 아이디 정보는 존재한다
+        	 //하지만 로그인 아이디와 같이 저장된 비밀번호가 존재하지 않음(해당 로그인 아이디 인덱스의 비밀번호와 입력한 비밀번호 불일치)
         	 System.out.println("비밀번호를 확인해주세요.");
         	 return;
          }
+         loginedMember = login;
+         
          System.out.printf("로그인 성공! %s님 환영합니다\n", login.name);
         	 
-    }
+	}
+	private void doLogout() {
+		if( isLogined() == false ) {
+			System.out.println("로그인 후 이용해주세요");
+			return;
+		}
+		loginedMember = null;
+		System.out.println("로그아웃 성공!");
+        
+	}
+	private boolean isLogined() {
+		return loginedMember != null;
+	}
+	//*로그인 관련 함수*
 	private Login getLoginById(String loginId) {
+		//*로그인하려는* 사용자가 입력한 로그인 아이디와 같은 아이디가 존재하는지 체크하는 함수
 		for( Login login : logins ) {
             if(login.loginId.equals(login.loginId)) {
             	return login;
+            	//로그인하려는 사용자가 입력한 로그인 아이디와 같은 아이디(가입한 아이디 정보)가 존재하면 가입 정보를 리턴함
             }
         }
 		return null;
+		//로그인하려는 사용자가 입력한 로그인 아이디와 같은 아이디(가입한 아이디)가 존재하지 않으면 null을 리턴함
      }
+    //*회원가입 관련 함수*
 	private boolean loginIdDupChk(String loginId) {
-		
+		//*가입하려고 하는* 로그인 아이디가 존재하는지 확인하는 함수
+		//가입하려고 하는 로그인 아이디가 존재하면 다른 사람이 같은 아이디로 회원가입할 수 없음 
 		Login login = getLoginById(loginId);
 		
 		if(login == null)
 		   return true;
+		//가입하려고 하는 사용자가 입력한 아이디가 존재하지 않기 때문에 true를 리턴
+		//-> 해당 로그인 아이디로 회원가입할 수 있음
 		return false;
 		
 		
 	}
+	public void makeTestData() {
+ 		System.out.println("회원가입 테스트 데이터를 생성합니다");
+ 		logins.add(new Login(1, Util.getDate(), "kho3155", "12345", "김혜원"));
+ 		logins.add(new Login(2, Util.getDate(), "kho3156", "12345", "이혜원"));
+ 		logins.add(new Login(3, Util.getDate(), "kho3157", "12345", "박혜원"));
+ 		
+     }
 	
 }
