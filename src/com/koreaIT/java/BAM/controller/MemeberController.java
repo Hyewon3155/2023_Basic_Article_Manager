@@ -26,6 +26,9 @@ public class MemeberController extends Controller {
 		 case "join":
 			 doJoin();
 			 break;
+		 case "login":
+			 doLogin();
+			 break;
 		 default:
 				System.out.println("존재하지 않는 명령어입니다");
 				break;
@@ -70,13 +73,39 @@ public class MemeberController extends Controller {
 	    logins.add(login);
 	    System.out.printf("%s회원님 환영합니다.\n", name);
 	}
-	private boolean loginIdDupChk(String loginId) {
+	private void doLogin() {
+         System.out.printf("로그인 아이디: ");
+         String loginId = sc.nextLine();
+         System.out.printf("로그인 비밀번호: ");
+         String doPwd = sc.nextLine();
+         Login login = getLoginById(loginId);
+         
+         if(login == null) {
+        	 System.out.println("존재하지 않는 아이디입니다.");
+             return;
+         }
+         if(login.pwd.equals(doPwd) == false) {
+        	 System.out.println("비밀번호를 확인해주세요.");
+        	 return;
+         }
+         System.out.printf("로그인 성공! %s님 환영합니다\n", login.name);
+        	 
+    }
+	private Login getLoginById(String loginId) {
 		for( Login login : logins ) {
-			if(login.loginId.equals(loginId) ) 
-				return false;
-	     }
+            if(login.loginId.equals(login.loginId)) {
+            	return login;
+            }
+        }
+		return null;
+     }
+	private boolean loginIdDupChk(String loginId) {
 		
-		return true;
+		Login login = getLoginById(loginId);
+		
+		if(login == null)
+		   return true;
+		return false;
 		
 		
 	}
