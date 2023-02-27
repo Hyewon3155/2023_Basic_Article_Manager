@@ -33,7 +33,7 @@ public class ArticleController extends Controller{
 		case "detail":
 			 detail();
 			 break;
-		case "modify":
+		case "modify": 
 			 modify();
 			 break;
 		case "delete":
@@ -56,7 +56,7 @@ public class ArticleController extends Controller{
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 
-		Article article = new Article(id, regDate, title, body);
+		Article article = new Article(id, regDate, loginedMember.id, title, body);
 		
 		articles.add(article);
 
@@ -97,11 +97,11 @@ public class ArticleController extends Controller{
 			
 		
 
-		System.out.println("번호	|	제목	|		날짜		|	조회");
+		System.out.println("번호	|	제목	|		날짜		|	작성자  | 조회");
 		Collections.reverse(printArticles);
 		// printArticles에 있는 값들의 순서를 반대로 바꾸어 줌
 		for (Article article : printArticles) {
-			System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
+			System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.memberId, article.viewCnt);
 			// 검색어가 있는 경우에는 해당 제목이 포함되어 있는 article의 값들을 출력
 			// 검색어가 없는 경우 article에 담겨있는 모든 값들을 출력(리스트 출력)
 		}
@@ -126,6 +126,7 @@ public class ArticleController extends Controller{
 		
 		System.out.printf("번호 : %d\n", getfindIndex(id).id);
 		System.out.printf("날짜 : %s\n", getfindIndex(id).regDate);
+		System.out.printf("작성자: %s\n", getfindIndex(id).memberId);
 		System.out.printf("제목 : %s\n", getfindIndex(id).title);
 		System.out.printf("내용 : %s\n", getfindIndex(id).body);
 		System.out.printf("조회수 : %d\n", getfindIndex(id).viewCnt);
@@ -155,6 +156,12 @@ public class ArticleController extends Controller{
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
+		
+		if(foundArticle.memberId != loginedMember.id) {
+			System.out.println("권한이 없습니다.");
+			return;
+		}
+		
 		
 		System.out.printf("수정할 제목 : ");
 		String title = sc.nextLine();
@@ -200,9 +207,9 @@ public class ArticleController extends Controller{
 	}
      public void makeTestData() {
  		System.out.println("게시물 테스트 데이터를 생성합니다");
- 		articles.add(new Article(1, Util.getDate(), "제목1", "내용1", 10));
- 		articles.add(new Article(2, Util.getDate(), "제목2", "내용2", 20));
- 		articles.add(new Article(3, Util.getDate(), "제목3", "내용3", 30));
+ 		articles.add(new Article(1, Util.getDate(), 1,"제목1", "내용1", 10));
+ 		articles.add(new Article(2, Util.getDate(), 2,"제목2", "내용2", 20));
+ 		articles.add(new Article(3, Util.getDate(), 3, "제목3", "내용3", 30));
  		
      }
        

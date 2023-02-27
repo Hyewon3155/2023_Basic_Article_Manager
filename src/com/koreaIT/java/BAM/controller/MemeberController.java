@@ -12,31 +12,31 @@ public class MemeberController extends Controller {
 	private List<Login> logins;
     private Scanner sc;
     private int lastMemberId;
-    private Login loginedMember;
-
-	public MemeberController(Scanner sc) {
+   
+    public MemeberController(Scanner sc) {
 		this.logins = new ArrayList<>();
 		// 리스트를 받아오지 않고 클래스 내부에서 생성
 	    this.sc = sc;
 	    this.lastMemberId = 3;
-	    this.loginedMember = null;
+	    loginedMember = null;
 	}
 	@Override
 	public void doAction(String cmd, String methodName) {
-		 
+		
 		 switch(methodName) {
-		 case "join":
+		   case "logout":
+				 doLogout();
+				 break;
+		   case "profile":
+			     showProfile();
+			     break;
+		  case "join":
 			 doJoin();
 			 break;
-		 case "login":
+		  case "login":
 			 doLogin();
 			 break;
-		 case "logout":
-			 doLogout();
-			 break;
-		 case "profile":
-		     showProfile();
-		     break;
+		 
 		 default:
 				System.out.println("존재하지 않는 명령어입니다");
 				break;
@@ -108,6 +108,8 @@ public class MemeberController extends Controller {
         	 System.out.println("비밀번호를 확인해주세요.");
         	 return;
          }
+         //this.loginedMember로는 사용하면 안 됨
+         //loginedMember는 static이므로 이 클래스 내부에 존재하는 것이 아니기 때문
          loginedMember = login;
          
          System.out.printf("로그인 성공! %s님 환영합니다\n", login.name);
@@ -132,9 +134,6 @@ public class MemeberController extends Controller {
 		loginedMember = null;
 		System.out.println("로그아웃 성공!");
         
-	}
-	private boolean isLogined() {
-		return loginedMember != null;
 	}
 	//*로그인 관련 함수*
 	private Login getLoginById(String loginId) {
