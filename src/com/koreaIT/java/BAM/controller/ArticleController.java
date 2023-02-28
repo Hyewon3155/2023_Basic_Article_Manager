@@ -1,21 +1,24 @@
 package com.koreaIT.java.BAM.controller;
 
+
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+import com.koreaIT.java.BAM.container.Container;
 import com.koreaIT.java.BAM.dto.Article;
+import com.koreaIT.java.BAM.dto.Login;
 import com.koreaIT.java.BAM.util.Util;
 
 public class ArticleController extends Controller{
-    private List<Article> articles;
     private Scanner sc;
     private int lastArticleId;
     private String cmd;
+    private List<Article> articles;
 	public ArticleController(Scanner sc) {
-		this.articles = new ArrayList<>();
-		// 리스트를 앱에서 받아오지 말고, 아예 클래스 자체에서 생성
+	    this.articles = Container.articleDao.articles;
 		this.sc = sc;
 		this.lastArticleId = 3;
 	}
