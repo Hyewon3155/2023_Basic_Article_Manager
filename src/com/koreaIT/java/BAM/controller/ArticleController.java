@@ -1,7 +1,5 @@
 package com.koreaIT.java.BAM.controller;
 
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,13 +12,11 @@ import com.koreaIT.java.BAM.util.Util;
 
 public class ArticleController extends Controller{
     private Scanner sc;
-    private int lastArticleId;
     private String cmd;
     private List<Article> articles;
 	public ArticleController(Scanner sc) {
 	    this.articles = Container.articleDao.articles;
 		this.sc = sc;
-		this.lastArticleId = 3;
 	}
 	@Override
 	public void doAction(String cmd, String methodName) {
@@ -51,8 +47,7 @@ public class ArticleController extends Controller{
 		
 	}
 	private void write() {
-		int id = lastArticleId + 1;
-		lastArticleId = id;
+		int id = Container.articleDao.plusId();
 		String regDate = Util.getDate();
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
@@ -61,7 +56,9 @@ public class ArticleController extends Controller{
 
 		Article article = new Article(id, regDate, loginedMember.id, title, body);
 		
-		articles.add(article);
+		Container.articleDao.add(article);
+	    //article.add(article)의 과정을 Container로 역할 이전
+		//DB(리스트)를 건드리는 일을 Container가 모두 할 수 있도록 함
 
 		System.out.printf("%d번 글이 생성되었습니다\n", id);
 
@@ -104,7 +101,17 @@ public class ArticleController extends Controller{
 		Collections.reverse(printArticles);
 		// printArticles에 있는 값들의 순서를 반대로 바꾸어 줌
 		for (Article article : printArticles) {
-			System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, article.memberId, article.viewCnt);
+			String writerName = null;
+			
+			List<Login> logins = Container.memberDao.logins;
+			
+			for(Login login : logins) {
+				if(article.memberId == login.id) {
+					writerName = login.name;
+					break;
+				}
+			}
+			System.out.printf("%d	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, writerName, article.viewCnt);
 			// 검색어가 있는 경우에는 해당 제목이 포함되어 있는 article의 값들을 출력
 			// 검색어가 없는 경우 article에 담겨있는 모든 값들을 출력(리스트 출력)
 		}
@@ -125,11 +132,23 @@ public class ArticleController extends Controller{
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
+		
+		String writerName = null;
+		
+		List<Login> logins = Container.memberDao.logins;
+		
+		for(Login login : logins) {
+			if(foundArticle.memberId == login.id) {
+				writerName = login.name;
+				break;
+			}
+		}
+		
 		getfindIndex(id).addViewCnt();
 		
 		System.out.printf("번호 : %d\n", getfindIndex(id).id);
 		System.out.printf("날짜 : %s\n", getfindIndex(id).regDate);
-		System.out.printf("작성자: %s\n", getfindIndex(id).memberId);
+		System.out.printf("작성자: %s\n", writerName);
 		System.out.printf("제목 : %s\n", getfindIndex(id).title);
 		System.out.printf("내용 : %s\n", getfindIndex(id).body);
 		System.out.printf("조회수 : %d\n", getfindIndex(id).viewCnt);
@@ -210,9 +229,9 @@ public class ArticleController extends Controller{
 	}
      public void makeTestData() {
  		System.out.println("게시물 테스트 데이터를 생성합니다");
- 		articles.add(new Article(1, Util.getDate(), 1,"제목1", "내용1", 10));
- 		articles.add(new Article(2, Util.getDate(), 2,"제목2", "내용2", 20));
- 		articles.add(new Article(3, Util.getDate(), 3, "제목3", "내용3", 30));
+ 		Container.articleDao.add(new Article(Container.articleDao.plusId(), Util.getDate(), 1,"제목1", "내용1", 10));
+ 		Container.articleDao.add(new Article(Container.articleDao.plusId(), Util.getDate(), 2,"제목2", "내용2", 20));
+ 		Container.articleDao.add(new Article(Container.articleDao.plusId(), Util.getDate(), 3, "제목3", "내용3", 30));
  		
      }
        

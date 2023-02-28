@@ -14,7 +14,6 @@ public abstract class Controller {
 	}
 	public abstract void doAction(String cmd, String methodName);
 	
-	public abstract void makeTestData();
 	//어차피 재정의를 해주어야 하지만 ArticleController와 MemberController에 동일하게 사용됨
 	//그러므로 추상매소드로 선언한다.
 

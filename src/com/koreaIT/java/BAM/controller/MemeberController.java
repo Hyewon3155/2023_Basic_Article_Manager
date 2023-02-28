@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.koreaIT.java.BAM.container.Container;
 import com.koreaIT.java.BAM.dto.Login;
 import com.koreaIT.java.BAM.util.Util;
 
@@ -11,13 +12,11 @@ public class MemeberController extends Controller {
 	
 	private List<Login> logins;
     private Scanner sc;
-    private int lastMemberId;
    
     public MemeberController(Scanner sc) {
 		this.logins = new ArrayList<>();
 		// 리스트를 받아오지 않고 클래스 내부에서 생성
 	    this.sc = sc;
-	    this.lastMemberId = 3;
 	    loginedMember = null;
 	}
 	@Override
@@ -48,8 +47,7 @@ public class MemeberController extends Controller {
 			System.out.println("로그아웃 후 이용해주세요");
 		    return;
 		}
-		int id = lastMemberId + 1;
-		lastMemberId = id;
+		int id = Container.memberDao.plusId();
 		String regDate = Util.getDate();
 		String loginId = null;
 		
@@ -86,28 +84,45 @@ public class MemeberController extends Controller {
 	    System.out.printf("%s회원님 환영합니다.\n", name);
 	}
 	private void doLogin() {
-		 if(isLogined()) {
-			 System.out.println("이미 로그인 상태입니다");
-			 return;
-		 }
-         System.out.printf("로그인 아이디: ");
-         String loginId = sc.nextLine();
-         System.out.printf("로그인 비밀번호: ");
-         String doPwd = sc.nextLine();
-         Login login = getLoginById(loginId);
-         
-         if(login == null) {
-        	 //로그인하려는 사용자가 입력한 로그인 아이디 정보가 존재하지 않음
-        	 //해당 아이디로 회원가입을 한 적이 없음
-        	 System.out.println("존재하지 않는 아이디입니다.");
-             return;
-         }
-         if(login.pwd.equals(doPwd) == false) {
-        	 //로그인하려는 사용자가 입력한 로그인 아이디 정보는 존재한다
-        	 //하지만 로그인 아이디와 같이 저장된 비밀번호가 존재하지 않음(해당 로그인 아이디 인덱스의 비밀번호와 입력한 비밀번호 불일치)
-        	 System.out.println("비밀번호를 확인해주세요.");
-        	 return;
-         }
+		Login login = null;
+		String loginId = null;
+		String doPwd = null;
+	     while(true) {
+	    	 System.out.printf("로그인 아이디 : ");
+	         loginId = sc.nextLine();
+	         
+	         if(loginId.trim().length() == 0) {
+	        	 System.out.println("로그인 아이디를 입력해주세요");
+	        	 continue;
+	         }
+	         while(true) {
+		    	 System.out.printf("로그인 비밀번호: ");
+		         doPwd = sc.nextLine(); 
+		         
+		         if(doPwd.trim().length() == 0) {
+		        	 System.out.println("로그인 비밀번호를 입력해주세요");
+		        	 continue;
+		         }
+		         break;
+		      
+		     }
+	         login = getLoginById(loginId);
+	         if(login == null) {
+	        	 //로그인하려는 사용자가 입력한 로그인 아이디 정보가 존재하지 않음
+	        	 //해당 아이디로 회원가입을 한 적이 없음
+	        	 System.out.println("존재하지 않는 아이디입니다.");
+	             return;
+	         }
+	         if(login.pwd.equals(doPwd) == false) {
+	        	 //로그인하려는 사용자가 입력한 로그인 아이디 정보는 존재한다
+	        	 //하지만 로그인 아이디와 같이 저장된 비밀번호가 존재하지 않음(해당 로그인 아이디 인덱스의 비밀번호와 입력한 비밀번호 불일치)
+	        	 System.out.println("비밀번호를 확인해주세요.");
+	        	 return;
+	         }
+	         break;
+	        
+	     }
+	    
          //this.loginedMember로는 사용하면 안 됨
          //loginedMember는 static이므로 이 클래스 내부에 존재하는 것이 아니기 때문
          loginedMember = login;
@@ -163,9 +178,9 @@ public class MemeberController extends Controller {
 	}
 	public void makeTestData() {
  		System.out.println("회원가입 테스트 데이터를 생성합니다");
- 		logins.add(new Login(1, Util.getDate(), "kho3155", "12345", "김혜원"));
- 		logins.add(new Login(2, Util.getDate(), "kho3156", "12345", "이혜원"));
- 		logins.add(new Login(3, Util.getDate(), "kho3157", "12345", "박혜원"));
+ 		Container.memberDao.add(new Login(Container.memberDao.plusId(), Util.getDate(), "kho3155", "12345", "김혜원"));
+ 		Container.memberDao.add(new Login(Container.memberDao.plusId(), Util.getDate(), "kho3156", "12345", "이혜원"));
+ 		Container.memberDao.add(new Login(Container.memberDao.plusId(), Util.getDate(), "kho3157", "12345", "박혜원"));
  		
      }
 	
