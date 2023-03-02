@@ -1,21 +1,26 @@
 package com.koreaIT.java.BAM.controller;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 import com.koreaIT.java.BAM.container.Container;
 import com.koreaIT.java.BAM.dto.Article;
-import com.koreaIT.java.BAM.dto.Login;
+import com.koreaIT.java.BAM.service.ArticleService;
+import com.koreaIT.java.BAM.service.MemberService;
 import com.koreaIT.java.BAM.util.Util;
 
 public class ArticleController extends Controller{
     private Scanner sc;
     private String cmd;
-    private List<Article> articles;
+    private ArticleService articleService;
+    // 아예 객체를 생성
+    private MemberService memberService;
 	public ArticleController(Scanner sc) {
-	    this.articles = Container.articleDao.articles;
 		this.sc = sc;
+		this.articleService = Container.articleService;
+		//객체를 생성해서 Container.articleService와 연결
+		//그래서 밑에서는 Container를 쓰지 않도록 해줌
+		this.memberService = Container.memberService;
 	}
 	@Override
 	public void doAction(String cmd, String methodName) {
@@ -46,7 +51,7 @@ public class ArticleController extends Controller{
 		
 	}
 	private void write() {
-		int id = Container.articleDao.plusId();
+		int id = articleService.plusId();
 		String regDate = Util.getDate();
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
@@ -55,7 +60,7 @@ public class ArticleController extends Controller{
 
 		Article article = new Article(id, regDate, loginedMember.id, title, body);
 		
-		Container.articleDao.add(article);
+		articleService.add(article);
 	    //article.add(article)의 과정을 Container로 역할 이전
 		//DB(리스트)를 건드리는 일을 Container가 모두 할 수 있도록 함
 
@@ -66,12 +71,11 @@ public class ArticleController extends Controller{
 		String searchKeyword = cmd.substring("article list".length()).trim();
 		// 앞에 있는 공백을 없애주기 위해 trim()을 사용
 		// article list의 길이만큼 잘라주고, 그 다음의 공백은 삭제하고 그 뒤부터 searchKeyword에 저장한다.
-		System.out.println("검색어: " + searchKeyword);
 		
-		List<Article> printArticles = Container.articleService.getPrintArticles(searchKeyword);
+		List<Article> printArticles = articleService.getPrintArticles(searchKeyword);
 		// printArticles에 원래 articles의 값들을 담아줌
 		// 새로운 객체가 갖고 있는 리모컨을 넘겨줌
-		if (articles.size() == 0) {
+		if (printArticles.size() == 0) {
 			System.out.println("게시글이 없습니다");
 			return; // -> 리턴으로 함수를 종료시키되 넘겨주는 값은 없다.
 		}
@@ -80,19 +84,12 @@ public class ArticleController extends Controller{
 
 		System.out.println("번호	|	제목	|		날짜		|	작성자  | 조회");
 		//Collections.reverse(printArticles);
-		// printArticles에 있는 값들의 순서를 반대로 바꾸어 줌
+		//-> printArticles에 있는 값들의 순서를 반대로 바꾸어 줌
 		for (int i = printArticles.size() - 1; i>=0 ; i--) {
+		//-> printArticles에 있는 값들을 for문의 역순회 방식을 통해 바꿈
 			Article article = printArticles.get(i);
-			String writerName = null;
+			String writerName = memberService.getWriterName(article.memberId);
 			
-			List<Login> logins = Container.memberDao.logins;
-			
-			for(Login login : logins) {
-				if(article.memberId == login.id) {
-					writerName = login.name;
-					break;
-				}
-			}
 			if(printArticles.size() == 0) {
 				System.out.println("검색결과가 없습니다.");
 				// 검색어가 있지만, 해당 검색어(제목)이 포함되어 있는 article의 값이 없어서 printArticles.size()의 크기가 0임. 
@@ -113,32 +110,24 @@ public class ArticleController extends Controller{
 		}
 		int id = Integer.parseInt(cmdBits[2]);
 		
-		Article foundArticle = Container.articleService.getfindIndex(id);
+		Article foundArticle = articleService.getfindIndex(id);
 		
 		if(foundArticle == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
 		
-		String writerName = null;
+		String writerName = memberService.getWriterName(foundArticle.memberId);
 		
-		List<Login> logins = Container.memberDao.logins;
-		//순회하는 로직을 따로 함수로 만들어서 빼주어야 함.
-		for(Login login : logins) {
-			if(foundArticle.memberId == login.id) {
-				writerName = login.name;
-				break;
-			}
-		}
 		
 		Container.articleService.getfindIndex(id).addViewCnt();
 		
-		System.out.printf("번호 : %d\n", Container.articleService.getfindIndex(id).id);
-		System.out.printf("날짜 : %s\n", Container.articleService.getfindIndex(id).regDate);
+		System.out.printf("번호 : %d\n", articleService.getfindIndex(id).id);
+		System.out.printf("날짜 : %s\n", articleService.getfindIndex(id).regDate);
 		System.out.printf("작성자: %s\n", writerName);
-		System.out.printf("제목 : %s\n", Container.articleService.getfindIndex(id).title);
-		System.out.printf("내용 : %s\n", Container.articleService.getfindIndex(id).body);
-		System.out.printf("조회수 : %d\n", Container.articleService.getfindIndex(id).viewCnt);
+		System.out.printf("제목 : %s\n", articleService.getfindIndex(id).title);
+		System.out.printf("내용 : %s\n", articleService.getfindIndex(id).body);
+		System.out.printf("조회수 : %d\n", articleService.getfindIndex(id).viewCnt);
 		
 		
 	}
@@ -151,16 +140,6 @@ public class ArticleController extends Controller{
 		int id = Integer.parseInt(cmdBits[2]);
 		
 		Article foundArticle = Container.articleService.getfindIndex(id);
-		
-		//순회하는 로직이므로 따로 함수로 빼주어야 함
-		for(int i = 0; i < articles.size(); i++) {
-			Article article = articles.get(i);
-			
-			if(article.id == id) {
-				foundArticle = article;
-				break;
-			}
-		}
 		
 		if(foundArticle == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
@@ -178,6 +157,7 @@ public class ArticleController extends Controller{
 		System.out.printf("수정할 내용 : ");
 		String body = sc.nextLine();
 		
+		Container.articleService.articleModify(foundArticle, title, body);
 		foundArticle.title = title;
 		foundArticle.body = body;
 		
@@ -198,18 +178,16 @@ public class ArticleController extends Controller{
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
-		
-		articles.remove(articles.indexOf(foundArticle));
-		
+		Container.articleService.remove(foundArticle);
 		System.out.printf("%d번 게시글을 삭제했습니다\n", id);
 		
 	} 
   
      public void makeTestData() {
  		System.out.println("게시물 테스트 데이터를 생성합니다");
- 		Container.articleDao.add(new Article(Container.articleDao.plusId(), Util.getDate(), 1,"제목1", "내용1", 10));
- 		Container.articleDao.add(new Article(Container.articleDao.plusId(), Util.getDate(), 2,"제목2", "내용2", 20));
- 		Container.articleDao.add(new Article(Container.articleDao.plusId(), Util.getDate(), 3, "제목3", "내용3", 30));
+ 		Container.articleService.add(new Article(articleService.plusId(), Util.getDate(), 1,"제목1", "내용1", 10));
+ 		Container.articleService.add(new Article(articleService.plusId(), Util.getDate(), 2,"제목2", "내용2", 20));
+ 		Container.articleService.add(new Article(articleService.plusId(), Util.getDate(), 3, "제목3", "내용3", 30));
  		
      }
        

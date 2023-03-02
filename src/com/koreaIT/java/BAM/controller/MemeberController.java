@@ -1,23 +1,19 @@
 package com.koreaIT.java.BAM.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Scanner;
 
-import com.koreaIT.java.BAM.container.Container;
 import com.koreaIT.java.BAM.dto.Login;
+import com.koreaIT.java.BAM.service.MemberService;
 import com.koreaIT.java.BAM.util.Util;
 
 public class MemeberController extends Controller {
 	
-	private List<Login> logins;
     private Scanner sc;
-   
-    public MemeberController(Scanner sc) {
-		this.logins = new ArrayList<>();
-		// 리스트를 받아오지 않고 클래스 내부에서 생성
+    private MemberService memberService;
+    public MemeberController(Scanner sc, MemberService memberService) {
 	    this.sc = sc;
-	    loginedMember = null;
+	    this.memberService = memberService;
 	}
 	@Override
 	public void doAction(String cmd, String methodName) {
@@ -43,14 +39,14 @@ public class MemeberController extends Controller {
 	    
 	}
 	private void doJoin() {
-		int id = Container.memberDao.plusId();
+		int id = memberService.plusId();
 		String regDate = Util.getDate();
 		String loginId = null;
 		
 		while( true ) {
 			System.out.printf("로그인 아이디: ");
 			loginId = sc.nextLine();
-			if (loginIdDupChk(loginId) == false) {
+			if (memberService.loginIdDupChk(loginId) == false) {
 				System.out.printf("%s은(는) 이미 사용중인 아이디입니다.\n", loginId);
 				continue;
 			}
@@ -76,7 +72,7 @@ public class MemeberController extends Controller {
 	    System.out.printf("이름: ");
 	    String name = sc.nextLine().trim();
 	    Login login = new Login(id, regDate, loginId, pwd, name);
-	    logins.add(login);
+	    memberService.add(login);
 	    System.out.printf("%s회원님 환영합니다.\n", name);
 	}
 	private void doLogin() {
@@ -102,7 +98,7 @@ public class MemeberController extends Controller {
 		         break;
 		      
 		     }
-	         login = getLoginById(loginId);
+	         login = memberService.getLoginById(loginId);
 	         if(login == null) {
 	        	 //로그인하려는 사용자가 입력한 로그인 아이디 정보가 존재하지 않음
 	        	 //해당 아이디로 회원가입을 한 적이 없음
@@ -138,37 +134,13 @@ public class MemeberController extends Controller {
 		System.out.println("로그아웃 성공!");
         
 	}
-	//*로그인 관련 함수*
-	private Login getLoginById(String loginId) {
-		//*로그인하려는* 사용자가 입력한 로그인 아이디와 같은 아이디가 존재하는지 체크하는 함수
-		for( Login login : logins ) {
-            if(login.loginId.equals(login.loginId)) {
-            	return login;
-            	//로그인하려는 사용자가 입력한 로그인 아이디와 같은 아이디(가입한 아이디 정보)가 존재하면 가입 정보를 리턴함
-            }
-        }
-		return null;
-		//로그인하려는 사용자가 입력한 로그인 아이디와 같은 아이디(가입한 아이디)가 존재하지 않으면 null을 리턴함
-     }
-    //*회원가입 관련 함수*
-	private boolean loginIdDupChk(String loginId) {
-		//*가입하려고 하는* 로그인 아이디가 존재하는지 확인하는 함수
-		//가입하려고 하는 로그인 아이디가 존재하면 다른 사람이 같은 아이디로 회원가입할 수 없음 
-		Login login = getLoginById(loginId);
-		
-		if(login == null)
-		   return true;
-		//가입하려고 하는 사용자가 입력한 아이디가 존재하지 않기 때문에 true를 리턴
-		//-> 해당 로그인 아이디로 회원가입할 수 있음
-		return false;
-		
-		
-	}
+	
+   
 	public void makeTestData() {
  		System.out.println("회원가입 테스트 데이터를 생성합니다");
- 		Container.memberDao.add(new Login(Container.memberDao.plusId(), Util.getDate(), "kho3155", "12345", "김혜원"));
- 		Container.memberDao.add(new Login(Container.memberDao.plusId(), Util.getDate(), "kho3156", "12345", "이혜원"));
- 		Container.memberDao.add(new Login(Container.memberDao.plusId(), Util.getDate(), "kho3157", "12345", "박혜원"));
+ 		memberService.add(new Login(memberService.plusId(), Util.getDate(), "kho3155", "12345", "김혜원"));
+ 		memberService.add(new Login(memberService.plusId(), Util.getDate(), "kho3156", "12345", "이혜원"));
+ 		memberService.add(new Login(memberService.plusId(), Util.getDate(), "kho3157", "12345", "박혜원"));
  		
      }
 	
