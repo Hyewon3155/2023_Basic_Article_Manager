@@ -20,4 +20,29 @@ public class ArticleDao extends Dao {
 	}
 
 
+	public List<Article> getPrintArticles(String searchKeyword) {
+		if(searchKeyword.length() > 0) {
+			List<Article> printArticles = new ArrayList<>();
+		    
+			for(Article article : articles) {
+				if(article.title.contains(searchKeyword)) {
+					printArticles.add(article);
+					// 검색어가 있는 경우 해당 검색어(제목)이 포함되어 있는 article의 값들을 담음
+				}
+		    }
+			return printArticles;
+		}
+		return articles;
+	}
+    public Article getfindIndex(int id) {
+		
+		for(Article article : articles) {
+			if(article.id == id) {
+				return article;
+			}
+		}
+		return null;
+		
+	}
+
 }

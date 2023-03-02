@@ -43,10 +43,6 @@ public class MemeberController extends Controller {
 	    
 	}
 	private void doJoin() {
-		if(isLogined()) {
-			System.out.println("로그아웃 후 이용해주세요");
-		    return;
-		}
 		int id = Container.memberDao.plusId();
 		String regDate = Util.getDate();
 		String loginId = null;
@@ -131,10 +127,6 @@ public class MemeberController extends Controller {
         	 
 	}
 	private void showProfile() {
-		if(isLogined() == false) {
-			System.out.println("로그인 후 이용해 주세요");
-	        return;
-		}
 		System.out.println("== 내 정보 ==");
 		System.out.printf("로그인 아이디: %s\n", loginedMember.loginId);
 		System.out.printf("이름: %s\n", loginedMember.name);
@@ -142,10 +134,6 @@ public class MemeberController extends Controller {
 		
 	}
 	private void doLogout() {
-		if( isLogined() == false ) {
-			System.out.println("로그인 후 이용해주세요");
-			return;
-		}
 		loginedMember = null;
 		System.out.println("로그아웃 성공!");
         
