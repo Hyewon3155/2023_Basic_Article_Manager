@@ -1,28 +1,34 @@
 package com.koreaIT.java.BAM.service;
 
 import com.koreaIT.java.BAM.container.Container;
+import com.koreaIT.java.BAM.dao.MemberDao;
 import com.koreaIT.java.BAM.dto.Login;
 
 public class MemberService {
-
+  
+	private MemberDao memberDao;
+	
+	public MemberService() {
+		this.memberDao = Container.memberDao;
+	}
 	public int plusId() {
-		return Container.memberDao.plusId();
+		return memberDao.plusId();
 	}
 
 	public Login getLoginById(String loginId) {
-		return Container.memberDao.getLoginById(loginId);
+		return memberDao.getLoginById(loginId);
 	}
 
 	public boolean loginIdDupChk(String loginId) {
-		return Container.memberDao.loginIdDupChk(loginId);
+		return memberDao.loginIdDupChk(loginId);
 	}
 
 	public void add(Login login) {
-		Container.memberDao.add(login);
+		memberDao.add(login);
 		
 	}
 
 	public String getWriterName(int memberId) {
-		return Container.memberDao.getWriterName(memberId);
+		return memberDao.getWriterName(memberId);
 	}
 }

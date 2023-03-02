@@ -18,8 +18,6 @@ public class ArticleController extends Controller{
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
 		this.articleService = Container.articleService;
-		//객체를 생성해서 Container.articleService와 연결
-		//그래서 밑에서는 Container를 쓰지 않도록 해줌
 		this.memberService = Container.memberService;
 	}
 	@Override
